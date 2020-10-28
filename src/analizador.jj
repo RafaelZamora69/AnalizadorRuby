@@ -5,6 +5,7 @@ public class analizador {
         try{
             analizador analyzer = new analizador(System.in);
             analyzer.Start();
+            System.out.println("Análisis sin errores");
         }catch(Exception e){
             System.out.println(e.getMessage());
         }
@@ -14,7 +15,7 @@ PARSER_END(analizador)
 //Ignorar
 SKIP :
 {
-    " " |
+    " "|
     "\t"
 }
 //Palabras reservadas
@@ -62,9 +63,9 @@ TOKEN: {<NOT: "not">}
 TOKEN: {<TRUE: "true">}
 TOKEN: {<FALSE: "false">}
 //Cadenas
-TOKEN : {<IDENTIFIER: ["a"-"z","A"-"Z"](["a"-"z","A"-"Z","0"-"9","?","_","-"])+>}
-TOKEN: {<VAR_DECLARATION: ["a"-"z","A"-"Z"](["a"-"z","A"-"Z","0"])+>}
-TOKEN : {<STRING: (["a"-"z","A"-"Z","0"-"9","¿","?","¡","!","#","=","+","-","*","/","(",")","[","]","@",":","."])+>}
+TOKEN : {<#texto : ["a"-"z","A"-"Z"](["a"-"z","A"-"Z","0"-"9"])+>}
+TOKEN : {<STRING: <texto>(["¿","¡","!","#","=","+","-","_","*","/","(",")","[","]","@",":","."," "])>}
+TOKEN : {<IDENTIFIER: <texto>["?"]>}
 TOKEN : {<NUMBER: ["-"]((["0"-"9"])+|(["0"-"9"])+"."(["0"-"9"])+)>}
 
 
@@ -79,18 +80,18 @@ void Params():
     /***
     * miFuncion(param1[,param2,...])
     */
-    <LPAREN><VAR_DECLARATION>[(<COMMA><VAR_DECLARATION>)+]<RPAREN>
+    <LPAREN><IDENTIFIER>[(<COMMA><IDENTIFIER>)+]<RPAREN>
 }
 void Interpolacion():
 {}
 {
     //Operaciones()
-    <CAT><LBRACE>(<IDENTIFIER>[Params()]|<VAR_DECLARATION>)<RBRACE>
+    <CAT><LBRACE>(<IDENTIFIER>[Params()])<RBRACE>
 }
 void Array():
 {}
 {
-    <LBRACKET>[(<VAR_DECLARATION>|<NIL>|<STRING>|<NUMBER>|<TRUE>|<FALSE>)]<RBRACKET>
+    <LBRACKET>[(<IDENTIFIER>|<NIL>|<STRING>|<NUMBER>|<TRUE>|<FALSE>)]<RBRACKET>
 }
 void Start():
 {}
@@ -104,7 +105,6 @@ void Start():
     */
     (Function())+|
     (Code())+
-    <END>
 }
 void Function():
 {}
@@ -129,12 +129,10 @@ void Variables():
     * variable = 0 | variable = "" | variable = nil | variable = false | variable = variable2
     *
     */
-    <VAR_DECLARATION><ASIGNATION>((<NUMBER>|String()|<NIL>|<TRUE>|<FALSE>|<VAR_DECLARATION>)|
+    <IDENTIFIER><ASIGNATION>((<NUMBER>|String()|<NIL>|<TRUE>|<FALSE>|<IDENTIFIER>[Params()])|
     /***
     * variable = functionName | variable = functionName(param1, ...)
-    */
-    (<IDENTIFIER>[Params()])|
-    /***
+    *
     * variable = [] | variable = [var1, nil, 2, "cadena", false, [...]
     */
     Array())<LineBreak>
@@ -145,7 +143,7 @@ void Puts():
     /***
     * puts variable | puts "Hola mundo" | puts "me llamo #{nombre} y tengo #{edad} añazos"
     */
-    <PUTS>(String()|Interpolacion()|<VAR_DECLARATION>)<LineBreak>
+    <PUTS>(String()|Interpolacion()|<IDENTIFIER>)<LineBreak>
 }
 void For():
 {}
@@ -153,7 +151,7 @@ void For():
     /***
     * for i in 10|[var,"hola",3,false]|"texto" | for i in array|string variable
     */
-    <FOR><VAR_DECLARATION><IN>(<NUMBER>|String()|<VAR_DECLARATION>|Array())<LineBreak>
+    <FOR><IDENTIFIER><IN>(<NUMBER>|String()|<IDENTIFIER>|Array())<LineBreak>
         Code()
     <END><LineBreak>
 }
