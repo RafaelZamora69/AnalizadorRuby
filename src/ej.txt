@@ -1,0 +1,7 @@
+def caca(var1,var2)
+    puts var1
+    puts "hola gato #{sexo} tienes #{edad} edad"
+    for i in 10
+        puts i
+    end
+end

@@ -5,7 +5,7 @@ public class analizador {
         try{
             analizador analyzer = new analizador(System.in);
             analyzer.Start();
-            System.out.println("Análisis sin errores");
+            System.out.println("Lexico y sintactico sin errores");
         }catch(Exception e){
             System.out.println(e.getMessage());
         }
@@ -63,16 +63,14 @@ TOKEN: {<NOT: "not">}
 TOKEN: {<TRUE: "true">}
 TOKEN: {<FALSE: "false">}
 //Cadenas
-TOKEN : {<#texto : ["a"-"z","A"-"Z"](["a"-"z","A"-"Z","0"-"9"])+>}
-TOKEN : {<STRING: <texto>(["¿","¡","!","#","=","+","-","_","*","/","(",")","[","]","@",":","."," "])>}
-TOKEN : {<IDENTIFIER: <texto>["?"]>}
-TOKEN : {<NUMBER: ["-"]((["0"-"9"])+|(["0"-"9"])+"."(["0"-"9"])+)>}
+TOKEN : {<NUMBER: ((["0"-"9"])+|(["0"-"9"])+"."(["0"-"9"])+)>}
+TOKEN : {<TEXT : (["a"-"z","A"-"Z","0"-"9"])+>}
 
 
 void String():
 {}
 {
-    <QUOTE><STRING>[(Interpolacion())+]<QUOTE>
+    <QUOTE><TEXT>[(Interpolacion()|<TEXT>)+]<QUOTE>
 }
 void Params():
 {}
@@ -80,18 +78,18 @@ void Params():
     /***
     * miFuncion(param1[,param2,...])
     */
-    <LPAREN><IDENTIFIER>[(<COMMA><IDENTIFIER>)+]<RPAREN>
+    <LPAREN><TEXT>[(<COMMA><TEXT>)+]<RPAREN>
 }
 void Interpolacion():
 {}
 {
     //Operaciones()
-    <CAT><LBRACE>(<IDENTIFIER>[Params()])<RBRACE>
+    <CAT><LBRACE>(<TEXT>|<NUMBER>)<RBRACE>
 }
 void Array():
 {}
 {
-    <LBRACKET>[(<IDENTIFIER>|<NIL>|<STRING>|<NUMBER>|<TRUE>|<FALSE>)]<RBRACKET>
+    <LBRACKET>[(<TEXT>|<NIL>|String()|<NUMBER>|<TRUE>|<FALSE>)[(<COMMA>(<TEXT>|<NIL>|String()|<NUMBER>|<TRUE>|<FALSE>))+]]<RBRACKET>
 }
 void Start():
 {}
@@ -104,23 +102,25 @@ void Start():
     * Code
     */
     (Function())+|
-    (Code())+
+    Code()
 }
 void Function():
 {}
 {
-    <DEF><IDENTIFIER><LineBreak>
+    <DEF><TEXT>[Params()]<LineBreak>
         Code()
     <END><LineBreak>
 }
 void Code():
 {}
 {
-    Variables()|
-    //If()|
-    For()|
-    Puts()
-    //Gets()
+    (
+        //If()|
+        For()|
+        Puts()|
+        //Gets()
+        Variables()
+    )+
 }
 void Variables():
 {}
@@ -129,7 +129,7 @@ void Variables():
     * variable = 0 | variable = "" | variable = nil | variable = false | variable = variable2
     *
     */
-    <IDENTIFIER><ASIGNATION>((<NUMBER>|String()|<NIL>|<TRUE>|<FALSE>|<IDENTIFIER>[Params()])|
+    <TEXT><ASIGNATION>((<NUMBER>|String()|<NIL>|<TRUE>|<FALSE>|<TEXT>[Params()])|
     /***
     * variable = functionName | variable = functionName(param1, ...)
     *
@@ -143,7 +143,7 @@ void Puts():
     /***
     * puts variable | puts "Hola mundo" | puts "me llamo #{nombre} y tengo #{edad} añazos"
     */
-    <PUTS>(String()|Interpolacion()|<IDENTIFIER>)<LineBreak>
+    <PUTS>(String()|Interpolacion()|<TEXT>)<LineBreak>
 }
 void For():
 {}
@@ -151,7 +151,7 @@ void For():
     /***
     * for i in 10|[var,"hola",3,false]|"texto" | for i in array|string variable
     */
-    <FOR><IDENTIFIER><IN>(<NUMBER>|String()|<IDENTIFIER>|Array())<LineBreak>
+    <FOR><TEXT><IN>(<NUMBER>|String()|<TEXT>|Array())<LineBreak>
         Code()
     <END><LineBreak>
 }
