@@ -1,0 +1,6 @@
+.DS_Store
+.idea/
+src/
+!src/*.jj
+!src/tokenAsignaciones.java
+!src/*.txt

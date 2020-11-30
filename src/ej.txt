@@ -1,7 +1,6 @@
-def caca(var1,var2)
-    puts var1
-    puts "hola gato #{sexo} tienes #{edad} edad"
-    for i in 10
-        puts i
-    end
+var = "hola mundo"
+puts 23
+puts "hola gato #{sexo} tienes #{edad} edad"
+for i in "hola sexo"
+    puts i
 end

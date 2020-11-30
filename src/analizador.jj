@@ -19,12 +19,9 @@ SKIP :
     "\t"
 }
 //Palabras reservadas
-TOKEN : {<DEF: "def">}
 TOKEN : {<END: "end">}
 TOKEN : {<DO: "do">}
-TOKEN : {<RETURN: "return">}
 TOKEN : {<PUTS: "puts">}
-TOKEN : {<GETS: "gets">}
 TOKEN : {<NIL: "nil">}
 TOKEN : {<IN: "in">}
 TOKEN : {<LineBreak: ("\r\n"|"\n")>}
@@ -72,14 +69,6 @@ void String():
 {
     <QUOTE><TEXT>[(Interpolacion()|<TEXT>)+]<QUOTE>
 }
-void Params():
-{}
-{
-    /***
-    * miFuncion(param1[,param2,...])
-    */
-    <LPAREN><TEXT>[(<COMMA><TEXT>)+]<RPAREN>
-}
 void Interpolacion():
 {}
 {
@@ -94,22 +83,7 @@ void Array():
 void Start():
 {}
 {
-    /**
-    * Las funciones van primero que las instrucciones del programa, se pueden definir las funciones que el usuario desee
-    * def functionName(params+)
-    *   //Code
-    * end
-    * Code
-    */
-    (Function())+|
     Code()
-}
-void Function():
-{}
-{
-    <DEF><TEXT>[Params()]<LineBreak>
-        Code()
-    <END><LineBreak>
 }
 void Code():
 {}
@@ -118,7 +92,6 @@ void Code():
         //If()|
         For()|
         Puts()|
-        //Gets()
         Variables()
     )+
 }
@@ -129,9 +102,8 @@ void Variables():
     * variable = 0 | variable = "" | variable = nil | variable = false | variable = variable2
     *
     */
-    <TEXT><ASIGNATION>((<NUMBER>|String()|<NIL>|<TRUE>|<FALSE>|<TEXT>[Params()])|
+    <TEXT><ASIGNATION>((<NUMBER>|String()|<NIL>|<TRUE>|<FALSE>)|
     /***
-    * variable = functionName | variable = functionName(param1, ...)
     *
     * variable = [] | variable = [var1, nil, 2, "cadena", false, [...]
     */
@@ -143,7 +115,7 @@ void Puts():
     /***
     * puts variable | puts "Hola mundo" | puts "me llamo #{nombre} y tengo #{edad} añazos"
     */
-    <PUTS>(String()|Interpolacion()|<TEXT>)<LineBreak>
+    <PUTS>(String()|<TEXT>|<NUMBER>)<LineBreak>
 }
 void For():
 {}
