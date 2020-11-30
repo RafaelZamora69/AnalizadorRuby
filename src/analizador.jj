@@ -127,3 +127,19 @@ void For():
         Code()
     <END><LineBreak>
 }
+void If():
+{}
+{
+  <IF>Comparacion()
+    Code()
+    <ELSE>
+    Code()
+    <END>(<EOL>|<EOLW>)+
+}
+void Comparacion():
+{}
+{
+  (<TRUE>|<FALSE>)(<EOL>|<EOLW>)+|
+  (<NUMBER>|<IDENTIFIER>|<TRUE>|<FALSE>|String())(<BIG>|<BIGEQ>|<LESS>|<LESSEQ>|<EQUALS>)(<NUMBER>|<IDENTIFIER>|<TRUE>|<FALSE>|String())
+  <END>(<EOL>|<EOLW>)+
+}
