@@ -89,7 +89,7 @@ void Code():
 {}
 {
     (
-        //If()|
+        If()|
         For()|
         Puts()|
         Variables()
@@ -127,3 +127,20 @@ void For():
         Code()
     <END><LineBreak>
 }
+void If():
+{}
+{
+  <IF>Comparacion()
+    Code()
+    <ELSE>
+    Code()
+    <END><LineBreak>
+}
+void Comparacion():
+{}
+{
+  (<TRUE>|<FALSE>)<LineBreak>|
+  (<NUMBER>|<TEXT>|<TRUE>|<FALSE>|String())(<BIG>|<BIGEQ>|<LESS>|<LESSEQ>|<EQUALS>)(<NUMBER>|<TEXT>|<TRUE>|<FALSE>|String())
+  <END><LineBreak>
+}
+
