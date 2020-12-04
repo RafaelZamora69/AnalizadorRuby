@@ -89,10 +89,11 @@ void Code():
 {}
 {
     (
-        If()|
+        //If()|
         For()|
         Puts()|
-        Variables()
+        Variables()|
+		Operaciones()
     )+
 }
 void Variables():
@@ -127,20 +128,13 @@ void For():
         Code()
     <END><LineBreak>
 }
-void If():
+void Operaciones():
 {}
 {
-  <IF>Comparacion()
-    Code()
-    <ELSE>
-    Code()
-    <END><LineBreak>
+<NUMBER>|String()|[<LPAREN>]((<NUMBER>|String())OperadoresArit()(<NUMBER>|String()))+[<RPAREN>]<LineBreak>
 }
-void Comparacion():
+void OperadoresArit():
 {}
 {
-  (<TRUE>|<FALSE>)<LineBreak>|
-  (<NUMBER>|<TEXT>|<TRUE>|<FALSE>|String())(<BIG>|<BIGEQ>|<LESS>|<LESSEQ>|<EQUALS>)(<NUMBER>|<TEXT>|<TRUE>|<FALSE>|String())
-  <END><LineBreak>
+ (<PLUS>|<MINUS>|<POR>|<DIVIDE>)
 }
-
