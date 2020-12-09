@@ -1,5 +1,4 @@
 PARSER_BEGIN(analizador)
-
 public class analizador {
     public static void main(String[] args)throws ParseException, Exception, TokenMgrError{
         try{
@@ -63,11 +62,16 @@ TOKEN: {<FALSE: "false">}
 TOKEN : {<NUMBER: ((["0"-"9"])+|(["0"-"9"])+"."(["0"-"9"])+)>}
 TOKEN : {<TEXT : (["a"-"z","A"-"Z","0"-"9"])+>}
 
-
+Token asignarString():
+{Token t2;}
+{
+    <QUOTE>(t2 = <TEXT>|t2 = <NUMBER>)<QUOTE>
+    {return t2;}
+}
 void String():
 {}
 {
-    <QUOTE><TEXT>[(Interpolacion()|<TEXT>)+]<QUOTE>
+    <QUOTE>(<TEXT>|<NUMBER>)[(Interpolacion()|(<TEXT>|<NUMBER>))+]<QUOTE>
 }
 void Interpolacion():
 {}
@@ -109,30 +113,35 @@ void Comparacion():
 {}
 {
   (<TRUE>|<FALSE>)<LineBreak>|
-  (<NUMBER>|<TEXT>|<TRUE>|<FALSE>|String())(<BIG>|<BIGEQ>|<LESS>|<LESSEQ>|<EQUALS>)(<NUMBER>|<TEXT>|<TRUE>|<FALSE>|String())
-  <END><LineBreak>
+  (<NUMBER>|<TEXT>|<TRUE>|<FALSE>|String())(<BIG>|<BIGEQ>|<LESS>|<LESSEQ>|<EQUALS>)(<NUMBER>|<TEXT>|<TRUE>|<FALSE>|String())<LineBreak>
 }
 void Variables():
-{}
+{Token t1,t2;}
 {
     /***
     * variable = 0 | variable = "" | variable = nil | variable = false | variable = variable2
     *
     */
-    <TEXT><ASIGNATION>((<NUMBER>|String()|<NIL>|<TRUE>|<FALSE>)|
+    t1 = <TEXT><ASIGNATION>(
+    t2 = <NUMBER>{tokenAsignaciones.Asignar(t1,Integer.parseInt(t2.image));}|
+    t2 = asignarString(){tokenAsignaciones.Asignar(t1,t2.image);}|
+    t2 = <TEXT>{tokenAsignaciones.AsignarVariable(t1,t2.image);}|
+    t2 = <NIL>{tokenAsignaciones.Asignar(t1,"nil");}|
+    t2 = <TRUE>{tokenAsignaciones.Asignar(t1,Boolean.parseBoolean(t2.image));}|
+    t2 = <FALSE>{tokenAsignaciones.Asignar(t1,Boolean.parseBoolean(t2.image));}|
     /***
     *
     * variable = [] | variable = [var1, nil, 2, "cadena", false, [...]
     */
-    Array())<LineBreak>
+    Array()|Operaciones())<LineBreak>
 }
 void Puts():
-{}
+{Token t1;}
 {
     /***
     * puts variable | puts "Hola mundo" | puts "me llamo #{nombre} y tengo #{edad} añazos"
     */
-    <PUTS>(String()|<TEXT>|<NUMBER>)<LineBreak>
+    <PUTS>(String()|t1 = <TEXT>{puts.puts(t1);}|<NUMBER>|Operaciones())<LineBreak>
 }
 void For():
 {}

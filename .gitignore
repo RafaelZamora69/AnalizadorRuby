@@ -1,6 +1,8 @@
 .DS_Store
 .idea/
-src/
-!src/*.jj
-!src/tokenAsignaciones.java
-!src/*.txt
+src/analizador/
+!src/analizador/*.jj
+!src/analizador/*.txt
+!src/analizador/puts.java
+!*/analizador/tokenAsignaciones.java
+*.iml

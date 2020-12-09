@@ -1,0 +1,3 @@
+sexo = "pene"
+var = sexo
+puts var
