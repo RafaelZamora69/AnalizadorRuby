@@ -73,7 +73,7 @@ void Interpolacion():
 {}
 {
     //Operaciones()
-    <CAT><LBRACE>(<TEXT>|<NUMBER>)<RBRACE>
+    <CAT><LBRACE>(<TEXT>|<NUMBER>|Operaciones())<RBRACE>
 }
 void Array():
 {}
@@ -89,12 +89,28 @@ void Code():
 {}
 {
     (
-        //If()|
+        If()|
         For()|
         Puts()|
         Variables()|
 		Operaciones()
     )+
+}
+void If():
+{}
+{
+  <IF>Comparacion()
+    Code()
+    [<ELSE><LineBreak>
+    Code()]
+    <END><LineBreak>
+}
+void Comparacion():
+{}
+{
+  (<TRUE>|<FALSE>)<LineBreak>|
+  (<NUMBER>|<TEXT>|<TRUE>|<FALSE>|String())(<BIG>|<BIGEQ>|<LESS>|<LESSEQ>|<EQUALS>)(<NUMBER>|<TEXT>|<TRUE>|<FALSE>|String())
+  <END><LineBreak>
 }
 void Variables():
 {}

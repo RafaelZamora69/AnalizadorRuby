@@ -4,3 +4,8 @@ puts "hola gato #{sexo} tienes #{edad} edad"
 for i in "hola sexo"
     puts i
 end
+if true
+    puts "pene"
+else
+    puts "es falso"
+end
