@@ -21,6 +21,14 @@ public class tokenAsignaciones {
         }
     }
 
+    public static Boolean comprobarVariable(String var){
+        return variables.get(var) != null ? true : false;
+    }
+
+    public static void AsignarArreglo(Token t1, String arreglo){
+        variables.put(t1.image, arreglo);
+    }
+
     public static HashMap obtenerHashMap(){
         return variables;
     }

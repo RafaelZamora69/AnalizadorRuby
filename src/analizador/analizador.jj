@@ -1,4 +1,5 @@
 PARSER_BEGIN(analizador)
+import java.util.ArrayList;
 public class analizador {
     public static void main(String[] args)throws ParseException, Exception, TokenMgrError{
         try{
@@ -68,6 +69,25 @@ Token asignarString():
     <QUOTE>(t2 = <TEXT>|t2 = <NUMBER>)<QUOTE>
     {return t2;}
 }
+String asignarArreglo():
+{Token t1; ArrayList<Token> arreglo = new ArrayList<>(); Token tFinal;}
+{
+    <LBRACKET>[(
+     t1 = <TEXT>{if(tokenAsignaciones.comprobarVariable(t1.image)){ arreglo.add(t1); } else { System.out.println("La variable " + t1.image + " no existe.");}}|
+     t1 = <NIL>{arreglo.add(t1);}|
+     t1 = asignarString(){arreglo.add(t1);}|
+     t1 = <NUMBER>{arreglo.add(t1);}|
+     t1 = <TRUE>{arreglo.add(t1);}|
+     t1 = <FALSE>{arreglo.add(t1);})[(
+     <COMMA>(
+     t1 = <TEXT>{if(tokenAsignaciones.comprobarVariable(t1.image)){ arreglo.add(t1); } else { System.out.println("La variable " + t1.image + " no existe.");}}|
+     t1 = <NIL>{arreglo.add(t1);}|
+     t1 = asignarString(){StringBuilder builder = new StringBuilder();builder.append("\"");builder.append(t1.image);builder.append("\"");t1.image = builder.toString(); arreglo.add(t1);}|
+     t1 = <NUMBER>{arreglo.add(t1);}|
+     t1 = <TRUE>{arreglo.add(t1);}|
+     t1 = <FALSE>{arreglo.add(t1);}))+]]<RBRACKET>
+     {return arreglo.toString();}
+}
 void String():
 {}
 {
@@ -116,7 +136,7 @@ void Comparacion():
   (<NUMBER>|<TEXT>|<TRUE>|<FALSE>|String())(<BIG>|<BIGEQ>|<LESS>|<LESSEQ>|<EQUALS>)(<NUMBER>|<TEXT>|<TRUE>|<FALSE>|String())<LineBreak>
 }
 void Variables():
-{Token t1,t2;}
+{Token t1,t2;String aux;}
 {
     /***
     * variable = 0 | variable = "" | variable = nil | variable = false | variable = variable2
@@ -133,7 +153,8 @@ void Variables():
     *
     * variable = [] | variable = [var1, nil, 2, "cadena", false, [...]
     */
-    Array()|Operaciones())<LineBreak>
+    aux = asignarArreglo(){tokenAsignaciones.AsignarArreglo(t1,aux);}|
+    Operaciones())<LineBreak>
 }
 void Puts():
 {Token t1;}
