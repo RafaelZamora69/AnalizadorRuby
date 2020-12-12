@@ -1,2 +1,1 @@
-sexo = [1,2,3,false,true,"sexoAnal",33,"avast"]
-puts sexo
+puts 23
