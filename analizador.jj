@@ -190,7 +190,9 @@ void Operaciones():
 {}
 {
 (<NUMBER>|<TEXT>)(OperadoresArit() (<NUMBER>|<TEXT>))*|
-<LPAREN> (<NUMBER>|<TEXT>) (OperadoresArit() (<NUMBER><TEXT>))*<LineBreak>
+(<NUMBER>|<TEXT>) OperadoresArit() (<LPAREN>((<NUMBER>|<TEXT>)[OperadoresArit()])*<RPAREN>)*|
+<LPAREN> (<NUMBER>|<TEXT>)(OperadoresArit() (<NUMBER>|<TEXT>))* <RPAREN>|
+<LPAREN> (<NUMBER>|<TEXT>) OperadoresArit() (<LPAREN>((<NUMBER>|<TEXT>)[OperadoresArit()])*<RPAREN>)* <RPAREN> <LineBreak>
 }
 void OperadoresArit():
 {}
