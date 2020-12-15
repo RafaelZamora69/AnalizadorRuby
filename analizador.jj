@@ -1,0 +1,199 @@
+PARSER_BEGIN(analizador)
+import java.util.ArrayList;
+public class analizador {
+    public static void main(String[] args)throws ParseException, Exception, TokenMgrError{
+        try{
+            analizador analyzer = new analizador(System.in);
+            analyzer.Start();
+            System.out.println("Lexico y sintactico sin errores");
+        }catch(Exception e){
+            System.out.println(e.getMessage());
+        }
+    }
+}
+PARSER_END(analizador)
+//Ignorar
+SKIP :
+{
+    " "|
+    "\t"
+}
+//Palabras reservadas
+TOKEN : {<END: "end">}
+TOKEN : {<DO: "do">}
+TOKEN : {<PUTS: "puts">}
+TOKEN : {<NIL: "nil">}
+TOKEN : {<IN: "in">}
+TOKEN : {<LineBreak: ("\r\n"|"\n")>}
+//Condicionales
+TOKEN: {<IF: "if">}
+TOKEN: {<ELSE: "else">}
+//ciclos
+TOKEN: {<FOR: "for">}
+//Simbolos
+TOKEN: {<PLUS: "+">}
+TOKEN: {<MINUS: "-">}
+TOKEN: {<POR: "*">}
+TOKEN: {<DIVIDE: "/">}
+TOKEN: {<INCREMENT: "++">}
+TOKEN: {<DECREMENT: "--">}
+TOKEN: {<LPAREN: "(">}
+TOKEN: {<RPAREN: ")">}
+TOKEN: {<LBRACKET: "[">}
+TOKEN: {<RBRACKET: "]">}
+TOKEN: {<LBRACE: "{">}
+TOKEN: {<RBRACE: "}">}
+TOKEN: {<ASIGNATION: "=">}
+TOKEN: {<QUOTE: "\"">}
+TOKEN: {<COMMA: ",">}
+TOKEN: {<COLON: ":">}
+TOKEN: {<CAT: "#">}
+//Operadores lógicos
+TOKEN: {<LESS: "<">}
+TOKEN: {<LESSEQ: "<=">}
+TOKEN: {<BIG: ">">}
+TOKEN: {<BIGEQ: ">=">}
+TOKEN: {<EQUALS: "==">}
+TOKEN: {<AND: "and">}
+TOKEN: {<OR: "or">}
+TOKEN: {<NOT: "not">}
+TOKEN: {<TRUE: "true">}
+TOKEN: {<FALSE: "false">}
+//Cadenas
+TOKEN : {<NUMBER: ((["0"-"9"])+|(["0"-"9"])+"."(["0"-"9"])+)>}
+TOKEN : {<TEXT : (["a"-"z","A"-"Z","0"-"9"])+>}
+
+Token asignarString():
+{Token t2;StringBuilder builder = new StringBuilder();}
+{
+    <QUOTE>(t2 = <TEXT>{builder.append(t2.image);}|t2 = <NUMBER>{builder.append(t2.image);})+<QUOTE>
+    {t2.image = builder.toString();return t2;}
+}
+String asignarArreglo():
+{Token t1; ArrayList<Token> arreglo = new ArrayList(); Token tFinal;}
+{
+    <LBRACKET>[(
+     t1 = <TEXT>{if(tokenAsignaciones.comprobarVariable(t1.image)){ arreglo.add(t1); } else { System.out.println("Error: '" + t1.image + "' no existe.");}}|
+     t1 = <NIL>{arreglo.add(t1);}|
+     t1 = asignarString(){StringBuilder builder = new StringBuilder();builder.append("\"");builder.append(t1.image);builder.append("\"");t1.image = builder.toString(); arreglo.add(t1);}|
+     t1 = <NUMBER>{arreglo.add(t1);}|
+     t1 = <TRUE>{arreglo.add(t1);}|
+     t1 = <FALSE>{arreglo.add(t1);})[(
+     <COMMA>(
+     t1 = <TEXT>{if(tokenAsignaciones.comprobarVariable(t1.image)){ arreglo.add(t1); } else { System.out.println("Error: '" + t1.image + "' no existe.");}}|
+     t1 = <NIL>{arreglo.add(t1);}|
+     t1 = asignarString(){StringBuilder builder = new StringBuilder();builder.append("\"");builder.append(t1.image);builder.append("\"");t1.image = builder.toString(); arreglo.add(t1);}|
+     t1 = <NUMBER>{arreglo.add(t1);}|
+     t1 = <TRUE>{arreglo.add(t1);}|
+     t1 = <FALSE>{arreglo.add(t1);}))+]]<RBRACKET>
+     {return arreglo.toString();}
+}
+String Interpolacion():
+{StringBuilder builder = new StringBuilder(); Token t1;}
+{
+    //Operaciones()
+    <CAT><LBRACE>(
+    t1 = <TEXT>{if(tokenAsignaciones.comprobarVariable(t1.image)){ builder.append(t1.image); } else { System.out.println("Error: '" + t1.image + "' no existe.");}}|
+    t1 = <NUMBER>{builder.append(t1.image);}|
+    Operaciones())<RBRACE>
+    {return builder.toString();}
+}
+String String():
+{StringBuilder builder = new StringBuilder();String aux;Token t;}
+{
+    <QUOTE>[(
+    aux = Interpolacion(){builder.append(aux);}|(
+    t = <TEXT>{builder.append(t.image);}|
+    t = <NUMBER>{builder.append(t.image);}))+]<QUOTE>
+    {return builder.toString();}
+}
+void Array():
+{}
+{
+    <LBRACKET>[(<TEXT>|<NIL>|String()|<NUMBER>|<TRUE>|<FALSE>)[(<COMMA>(<TEXT>|<NIL>|String()|<NUMBER>|<TRUE>|<FALSE>))+]]<RBRACKET>
+}
+void Start():
+{}
+{
+    Code()
+}
+void Code():
+{}
+{
+    (
+        If()|
+        For()|
+        Puts()|
+        Variables()|
+		Operaciones()
+    )+
+}
+void If():
+{}
+{
+  <IF>Comparacion()
+    Code()
+    [<ELSE><LineBreak>
+    Code()]
+    <END><LineBreak>
+}
+void Comparacion():
+{}
+{
+  (<TRUE>|<FALSE>)<LineBreak>|
+  (<NUMBER>|<TEXT>|<TRUE>|<FALSE>|String())(<BIG>|<BIGEQ>|<LESS>|<LESSEQ>|<EQUALS>)(<NUMBER>|<TEXT>|<TRUE>|<FALSE>|String())<LineBreak>
+}
+void Variables():
+{Token t1,t2;String aux;}
+{
+    /***
+    * variable = 0 | variable = "" | variable = nil | variable = false | variable = variable2
+    *
+    */
+    t1 = <TEXT><ASIGNATION>(
+    t2 = <NUMBER>{tokenAsignaciones.Asignar(t1,Integer.parseInt(t2.image));}|
+    t2 = asignarString(){tokenAsignaciones.Asignar(t1,t2.image);}|
+    t2 = <TEXT>{tokenAsignaciones.AsignarVariable(t1,t2.image);}|
+    t2 = <NIL>{tokenAsignaciones.Asignar(t1,"nil");}|
+    t2 = <TRUE>{tokenAsignaciones.Asignar(t1,Boolean.parseBoolean(t2.image));}|
+    t2 = <FALSE>{tokenAsignaciones.Asignar(t1,Boolean.parseBoolean(t2.image));}|
+    /***
+    *
+    * variable = [] | variable = [var1, nil, 2, "cadena", false, [...]
+    */
+    aux = asignarArreglo(){tokenAsignaciones.AsignarArreglo(t1,aux);}|
+    Operaciones())<LineBreak>
+}
+void Puts():
+{Token t1;String aux;}
+{
+    /***
+    * puts variable | puts "Hola mundo" | puts "me llamo #{nombre} y tengo #{edad} añazos"
+    */
+    <PUTS>(
+    aux = String(){puts.imprimir(aux);}|
+    t1 = <TEXT>{puts.imprimirVariable(t1);}|
+    t1 = <NUMBER>{puts.imprimir(t1.image);}|
+    Operaciones())<LineBreak>
+}
+void For():
+{}
+{
+    /***
+    * for i in 10|[var,"hola",3,false]|"texto" | for i in array|string variable
+    */
+    <FOR><TEXT><IN>(<NUMBER>|String()|<TEXT>|Array())<LineBreak>
+        Code()
+    <END><LineBreak>
+}
+void Operaciones():
+{}
+{
+(<NUMBER>|<TEXT>)(OperadoresArit() (<NUMBER>|<TEXT>))*|
+<LPAREN> (<NUMBER>|<TEXT>) (OperadoresArit() (<NUMBER><TEXT>))*<LineBreak>
+}
+void OperadoresArit():
+{}
+{
+ (<PLUS>|<MINUS>|<POR>|<DIVIDE>)
+}
