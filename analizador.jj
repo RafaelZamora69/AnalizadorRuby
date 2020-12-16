@@ -187,15 +187,15 @@ void For():
     <END><LineBreak>
 }
 void Operaciones():
-{}
+{Token t1; Token t2; Token t3;}
 {
-(<NUMBER>|<TEXT>)(OperadoresArit() (<NUMBER>|<TEXT>))*|
-(<NUMBER>|<TEXT>) OperadoresArit() (<LPAREN>((<NUMBER>|<TEXT>)[OperadoresArit()])*<RPAREN>)*|
-<LPAREN> (<NUMBER>|<TEXT>)(OperadoresArit() (<NUMBER>|<TEXT>))* <RPAREN>|
-<LPAREN> (<NUMBER>|<TEXT>) OperadoresArit() (<LPAREN>((<NUMBER>|<TEXT>)[OperadoresArit()])*<RPAREN>)* <RPAREN> <LineBreak>
+(t1=<NUMBER>|t1=<TEXT>{Integer.parseInt(t1.image);})(t2=<PLUS>|t2=<MINUS>|t2=<POR>|t2=<DIVIDE>) ((t3=<NUMBER>{operaciones.operaciones(t1,t2,t3);}|t3=<TEXT>{operaciones.operaciones(t1,t2,t3);}))*|
+(t1=<NUMBER>|t1=<TEXT>{Integer.parseInt(t1.image);}) (t2=<PLUS>|t2=<MINUS>|t2=<POR>|t2=<DIVIDE>) (<LPAREN>((t3=<NUMBER>{operaciones.operaciones(t1,t2,t3);}|t3=<TEXT>{operaciones.operaciones(t1,t2,t3);}|t3=<TEXT>{operaciones.operaciones(t1,t2,t3);})[OperadoresArit()])*<RPAREN>)*|
+<LPAREN> (t1=<NUMBER>|t1=<TEXT>{Integer.parseInt(t1.image);})((t2=<PLUS>|t2=<MINUS>|t2=<POR>|t2=<DIVIDE>) (t3=<NUMBER>{operaciones.operaciones(t1,t2,t3);}|t3=<TEXT>{operaciones.operaciones(t1,t2,t3);}|t3=<TEXT>{operaciones.operaciones(t1,t2,t3);}))* <RPAREN>|
+<LPAREN> (t1=<NUMBER>|t1=<TEXT>{Integer.parseInt(t1.image);}) (t2=<PLUS>|t2=<MINUS>|t2=<POR>|t2=<DIVIDE>) (<LPAREN>((t3=<NUMBER>{operaciones.operaciones(t1,t2,t3);}|t3=<TEXT>{operaciones.operaciones(t1,t2,t3);}|t3=<TEXT>{operaciones.operaciones(t1,t2,t3);})[OperadoresArit()])*<RPAREN>)* <RPAREN> <LineBreak>
 }
 void OperadoresArit():
-{}
+{Token t2;}
 {
- (<PLUS>|<MINUS>|<POR>|<DIVIDE>)
+ (t2=<PLUS>|t2=<MINUS>|t2=<POR>|t2=<DIVIDE>)
 }
