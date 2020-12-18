@@ -1,13 +1,14 @@
 import java.util.HashMap;
 public class tokenAsignaciones {
     public static HashMap<String, Object> variables = new HashMap<>();
+
     public static void Asignar(Token t1, Object t2){
         if(t2 instanceof Integer || t2 instanceof Boolean){
             variables.put(t1.image,t2);
         } else if(t2 instanceof String){
             StringBuilder cadena = new StringBuilder();
             cadena.append("\"");
-            cadena.append(String.valueOf(t2));
+            cadena.append(t2);
             cadena.append("\"");
             variables.put(t1.image,cadena);
         }
@@ -25,8 +26,8 @@ public class tokenAsignaciones {
         return variables.get(var) != null ? true : false;
     }
 
-    public static void AsignarArreglo(Token t1, String arreglo){
-        variables.put(t1.image, arreglo);
+    public static void AsignarArreglo(String identifier, String values){
+        variables.put(identifier, values);
     }
 
     public static HashMap obtenerHashMap(){

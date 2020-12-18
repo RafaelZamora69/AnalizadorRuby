@@ -1,1 +1,6 @@
-puts 23
+arreglo = [1,3,2]
+puts arreglo
+arreglo2 = ["holaje",23]
+puts arreglo2
+arreglo = [true,false]
+puts arreglo

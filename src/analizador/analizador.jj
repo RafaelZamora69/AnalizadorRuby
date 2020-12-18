@@ -66,10 +66,10 @@ TOKEN : {<TEXT : (["a"-"z","A"-"Z","0"-"9"])+>}
 Token asignarString():
 {Token t2;StringBuilder builder = new StringBuilder();}
 {
-    <QUOTE>(t2 = <TEXT>{builder.append(t2.image);}|t2 = <NUMBER>{builder.append(t2.image);})+<QUOTE>
+    <QUOTE>(t2 = <TEXT>{builder.append(t2.image);builder.append(" ");}|t2 = <NUMBER>{builder.append(t2.image);})+<QUOTE>
     {t2.image = builder.toString();return t2;}
 }
-String asignarArreglo():
+ArrayList asignarArreglo():
 {Token t1; ArrayList<Token> arreglo = new ArrayList<>(); Token tFinal;}
 {
     <LBRACKET>[(
@@ -86,7 +86,7 @@ String asignarArreglo():
      t1 = <NUMBER>{arreglo.add(t1);}|
      t1 = <TRUE>{arreglo.add(t1);}|
      t1 = <FALSE>{arreglo.add(t1);}))+]]<RBRACKET>
-     {return arreglo.toString();}
+     {return arreglo;}
 }
 String Interpolacion():
 {StringBuilder builder = new StringBuilder(); Token t1;}
@@ -144,7 +144,7 @@ void Comparacion():
   (<NUMBER>|<TEXT>|<TRUE>|<FALSE>|String())(<BIG>|<BIGEQ>|<LESS>|<LESSEQ>|<EQUALS>)(<NUMBER>|<TEXT>|<TRUE>|<FALSE>|String())<LineBreak>
 }
 void Variables():
-{Token t1,t2;String aux;}
+{Token t1,t2;ArrayList aux;}
 {
     /***
     * variable = 0 | variable = "" | variable = nil | variable = false | variable = variable2
@@ -161,7 +161,7 @@ void Variables():
     *
     * variable = [] | variable = [var1, nil, 2, "cadena", false, [...]
     */
-    aux = asignarArreglo(){tokenAsignaciones.AsignarArreglo(t1,aux);}|
+    aux = asignarArreglo(){Arreglo.asignarArreglo(t1.image,aux);}|
     Operaciones())<LineBreak>
 }
 void Puts():
@@ -190,8 +190,7 @@ void Operaciones():
 {}
 {
 
-<LPAREN>Operaciones()<RPAREN>|
-(<NUMBER>|<TEXT>)(OperadoresArit()(Operaciones()|<NUMBER>|<TEXT>))+
+<LPAREN>Operaciones()<RPAREN>
 }
 void OperadoresArit():
 {}
