@@ -5,4 +5,5 @@ src/analizador/
 !src/analizador/*.txt
 !src/analizador/puts.java
 !*/analizador/tokenAsignaciones.java
+!*/analizador/comparacion.java
 *.iml
