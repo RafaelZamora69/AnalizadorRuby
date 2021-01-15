@@ -1,7 +1,6 @@
 PARSER_BEGIN(analizador)
 import java.util.ArrayList;
 public class analizador {
-    static boolean evaluation;
     public static void main(String[] args)throws ParseException, Exception, TokenMgrError{
         try{
             analizador analyzer = new analizador(System.in);
@@ -132,27 +131,30 @@ void Code():
 void If():
 {}
 {
-  <IF>Comparacion(){System.out.println(evaluation);}
+  <IF>Comparacion()[<LineBreak>]
     Code()
     [<ELSE><LineBreak>
     Code()]
     <END><LineBreak>
 }
 void Comparacion():
-{Token t1,condition,t2;int int1,int2;String var1,var2,string1;boolean bool1,bool2;}
+{Token t1,condition;Object obj1;}
 {
   (<TRUE>|<FALSE>)<LineBreak>|
-  (t1 = <NUMBER>{int1 = Integer.parseInt(t1.image);}|<TEXT>{var1 = t1.image;}|<TRUE>{bool1 = Boolean.parseBoolean(t1.image);}|<FALSE>{bool1 = Boolean.parseBoolean(t1.image);}|t1 = asignarString(){string1 = t1.image;})
+  (
+    t1 = <NUMBER>{obj1 = t1.image;}|
+    t1 = <TEXT>{obj1 = t1.image;}|t1 = <TRUE>{obj1 = t1.image;}|t1 = <FALSE>{obj1 = t1.image;}|
+    t1 = asignarString(){obj1 = t1.image;})
   (condition = <BIG>|
   condition = <BIGEQ>|
   condition = <LESS>|
   condition = <LESSEQ>|
   condition = <EQUALS>)
-  (t1 = <NUMBER>{comparacion.CompararEnteros(int1, Integer.parseInt(t1.image));}|
-  <TEXT>{var1 = t1.image;}|
-  <TRUE>{bool1 = Boolean.parseBoolean(t1.image);}|
-  <FALSE>{bool1 = Boolean.parseBoolean(t1.image);}|
-    t1 = asignarString(){string1 = t1.image;})<LineBreak>
+  (t1 = <NUMBER>{comparacion.CompararEnteros(obj1, t1.image, condition.image);}|
+  t1 = <TEXT>{comparacion.CompararAsignacion(obj1, t1.image, condition.image);}|
+  <TRUE>|
+  <FALSE>|
+    t1 = asignarString(){comparacion.CompararCadenas((String)obj1, t1.image, condition.image);})<LineBreak>
 }
 void Variables():
 {Token t1,t2;ArrayList aux;}
@@ -172,7 +174,7 @@ void Variables():
     *
     * variable = [] | variable = [var1, nil, 2, "cadena", false, [...]
     */
-    aux = asignarArreglo(){Arreglo.asignarArreglo(t1.image,aux);}|
+    aux = asignarArreglo(){tokenAsignaciones.AsignarArreglo(t1.image,aux.toString());}|
     Operaciones())<LineBreak>
 }
 void Puts():
@@ -200,13 +202,8 @@ void For():
 void Operaciones():
 {}
 {
-<<<<<<< HEAD
     (<NUMBER>|<TEXT>)OperadoresArit()(<NUMBER>|<TEXT>)|
     <LPAREN>Operaciones()<RPAREN>
-=======
-
-<LPAREN>Operaciones()<RPAREN>
->>>>>>> 5e518d47e03b34d95cfd7997541d3cd36d415f0b
 }
 void OperadoresArit():
 {}

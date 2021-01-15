@@ -7,9 +7,7 @@ public class tokenAsignaciones {
             variables.put(t1.image,t2);
         } else if(t2 instanceof String){
             StringBuilder cadena = new StringBuilder();
-            cadena.append("\"");
             cadena.append(t2);
-            cadena.append("\"");
             variables.put(t1.image,cadena);
         }
     }

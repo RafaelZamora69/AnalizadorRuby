@@ -1,12 +1,4 @@
-<<<<<<< HEAD
-gato = "Gato"
-sexo = semen
-puts sexo
-=======
-arreglo = [1,3,2]
-puts arreglo
-arreglo2 = ["holaje",23]
-puts arreglo2
-arreglo = [true,false]
-puts arreglo
->>>>>>> 5e518d47e03b34d95cfd7997541d3cd36d415f0b
+sexo = "sexo"
+if "sexo" == sexo
+    puts "hola"
+end
