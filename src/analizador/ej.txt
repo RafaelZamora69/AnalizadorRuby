@@ -1,4 +1,4 @@
-sexo = "sexo"
-if "sexo" == sexo
+value = true
+if true == value
     puts "hola"
 end

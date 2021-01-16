@@ -140,7 +140,6 @@ void If():
 void Comparacion():
 {Token t1,condition;Object obj1;}
 {
-  (<TRUE>|<FALSE>)<LineBreak>|
   (
     t1 = <NUMBER>{obj1 = t1.image;}|
     t1 = <TEXT>{obj1 = t1.image;}|t1 = <TRUE>{obj1 = t1.image;}|t1 = <FALSE>{obj1 = t1.image;}|
@@ -152,9 +151,9 @@ void Comparacion():
   condition = <EQUALS>)
   (t1 = <NUMBER>{comparacion.CompararEnteros(obj1, t1.image, condition.image);}|
   t1 = <TEXT>{comparacion.CompararAsignacion(obj1, t1.image, condition.image);}|
-  <TRUE>|
-  <FALSE>|
-    t1 = asignarString(){comparacion.CompararCadenas((String)obj1, t1.image, condition.image);})<LineBreak>
+  t1 = <TRUE>{comparacion.CompararBoolean(obj1, t1.image, condition.image);}|
+  t1 = <FALSE>{comparacion.CompararBoolean(obj1, t1.image, condition.image);}|
+  t1 = asignarString(){comparacion.CompararCadenas((String)obj1, t1.image, condition.image);})<LineBreak>
 }
 void Variables():
 {Token t1,t2;ArrayList aux;}
