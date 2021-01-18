@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 public class tokenAsignaciones {
     public static HashMap<String, Object> variables = new HashMap<>();
@@ -24,8 +25,8 @@ public class tokenAsignaciones {
         return variables.get(var) != null ? true : false;
     }
 
-    public static void AsignarArreglo(String identifier, String values){
-        variables.put(identifier, values);
+    public static void AsignarArreglo(String identifier, ArrayList data){
+        variables.put(identifier, data);
     }
 
     public static HashMap obtenerHashMap(){

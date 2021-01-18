@@ -1,9 +1,15 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class puts {
     public static HashMap<String, Object> variables = tokenAsignaciones.obtenerHashMap();
     public static void imprimirVariable(Token t1){
-        System.out.println(variables.get(t1.image) == null ? "Error: '" + t1.image + "' no existe" : variables.get(t1.image));
+        Object variable = variables.get(t1.image);
+        if(variable != null){
+            System.out.println(variable);
+        } else {
+            System.out.println("Error de referencia: '" + t1.image + "' no esta existe");
+        }
     }
 
     public static void imprimir(String text){

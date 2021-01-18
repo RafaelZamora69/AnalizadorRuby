@@ -1,4 +1,4 @@
-value = true
-if true == value
-    puts "hola"
+var = 10
+if var == false
+    puts 10
 end

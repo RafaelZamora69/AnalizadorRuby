@@ -7,7 +7,7 @@ public class comparacion {
             t1 = Integer.parseInt((String)t1);
             t2 = Integer.parseInt((String)t2);
         }catch(Exception e){
-            System.out.println("Error semantico: \"" + (String)t1 + "\" no puede ser comparado con Integer");
+            System.out.println("Error: \"" + (String)t1 + "\" no puede ser comparado con Integer");
             return;
         }
         switch (operador) {
@@ -65,7 +65,9 @@ public class comparacion {
             }
             if(variable instanceof Boolean){
                 CompararBoolean((String)t1, variable.toString(), operador);
+                return;
             }
+            System.out.println("Error: '" + t2 + "' no es comparable");
         } else {
             System.out.println("Error: \"" + t2 + " no existe");
         }
@@ -73,17 +75,15 @@ public class comparacion {
     }
 
     public static void CompararBoolean(Object t1, Object t2, String operador){
-        try{
-            t1 = Boolean.parseBoolean((String)t1);
-            t2 = Boolean.parseBoolean((String)t2);
-        }catch(Exception e){
-            System.out.println("Error semantico: \"" + (String)t1 + "\" no puede ser comparado con Integer");
+        if((!t1.equals("true") || !t1.equals("false")) && (!t2.equals("true") || !t2.equals("false"))){
+            System.out.println("Error: \"" + (String)t1 + "\" no puede ser comparado con Boolean");
             return;
-        }
-        if(operador.equals("==") || operador.equals("!=")){
-            System.out.println(operador.equals("==") ? (Boolean)t1 == (Boolean)t2 : (Boolean)t1 != (Boolean)t2);
         } else {
-            System.out.println("Error semantico: " + operador + " no es un operador valido");
+            if(operador.equals("==") || operador.equals("!=")){
+                System.out.println(operador.equals("==") == (t1 == t2));
+            } else {
+                System.out.println("Error: " + operador + " no es un operador valido");
+            }
         }
     }
 }
