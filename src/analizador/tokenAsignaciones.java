@@ -37,5 +37,6 @@ public class tokenAsignaciones {
         if(variables.get(variable) != null){
             return variables.get(variable);
         }
+        return null;
     }
 }
