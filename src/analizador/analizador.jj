@@ -193,12 +193,15 @@ void For():
 {
     /***
     * for i in 10|[var,"hola",3,false]|"texto" | for i in array|string variable
-    */
+
     <FOR>iterator = <TEXT>{cicloFor.declararIterable(iterator.image);}<IN>
-    (iterable = <NUMBER><LineBreak>{for(int i = 0; i < Integer.parseInt(iterable.image); i++){Code();}}|
-    String()|
-    <TEXT>|
-    Array())
+    */
+    <FOR>iterator = <TEXT><IN>
+    (iterable = <NUMBER>|
+    iterable = <TEXT>|
+    iterable = cadenaFor()|
+    iterable = arregloFor())
+    Code()
     <END><LineBreak>
 }
 void Operaciones():
@@ -211,4 +214,27 @@ void OperadoresArit():
 {}
 {
  (<PLUS>|<MINUS>|<POR>|<DIVIDE>)
+}
+
+String cadenaFor():
+{StringBuilder builder = new StringBuilder();String aux;Token t;}
+{
+    <QUOTE>[(
+    t = <TEXT>{builder.append(t.image);builder.append(" ");}|
+    t = <NUMBER>{builder.append(t.image);builder.append(" ")})+]<QUOTE>
+    {return builder.toString();}
+}
+ArrayList arregloFor():
+{ArrayList<Object> arreglo = new ArrayList<>(); Token t1;}
+{
+    <LBRACE>
+    (
+        t1 = String(){arreglo.add(t1.image)}|
+        t1 = <NUMBER>{arreglo.add(Integer.parseInt(t1.image));}|
+        t1 = <TEXT>{
+            Object value = tokenAsignaciones.obtenerValor(t1.image);
+            arreglo.add(value);
+        }|
+        t1 = <TRUE>{arreglo.add(t1.image)}|
+        t1 = <FALSE>{})<RBRACE>
 }

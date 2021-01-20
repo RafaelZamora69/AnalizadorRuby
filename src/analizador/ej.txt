@@ -1,4 +1,8 @@
-var = 10
+var = false
 if var == false
-    puts 10
+    if 100 == 100
+        if "gato" > "sexo"
+            puts "Todo correcto je"
+        end
+    end
 end

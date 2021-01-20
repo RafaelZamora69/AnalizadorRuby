@@ -32,4 +32,10 @@ public class tokenAsignaciones {
     public static HashMap obtenerHashMap(){
         return variables;
     }
+
+    public static Object obtenerValor(String variable){
+        if(variables.get(variable) != null){
+            return variables.get(variable);
+        }
+    }
 }
