@@ -1,3 +1,6 @@
+arreglo = [1,7,5,9,2]
 for i in arreglo
-    puts "hola"
+    for j in arreglo
+        arreglo[j] = arreglo[i]
+    end
 end

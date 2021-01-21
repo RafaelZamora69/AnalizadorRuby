@@ -159,9 +159,9 @@ void Variables():
 {
     /***
     * variable = 0 | variable = "" | variable = nil | variable = false | variable = variable2
-    *
+    *TODO Falta agregar variable[indice]
     */
-    t1 = <TEXT><ASIGNATION>(
+    t1 = <TEXT>[<LBRACKET>(<NUMBER>|<TEXT>)<RBRACKET>]<ASIGNATION>(
     t2 = <NUMBER>{tokenAsignaciones.Asignar(t1,Integer.parseInt(t2.image));}|
     t2 = asignarString(){tokenAsignaciones.Asignar(t1,t2.image);}|
     t2 = <TEXT>{tokenAsignaciones.AsignarVariable(t1,t2.image);}|
@@ -188,20 +188,20 @@ void Puts():
     Operaciones())<LineBreak>
 }
 void For():
-{Token iterator, aux; String iterable; ArrayList arreglo;}
+{Token iterator, aux; StringBuilder Cadena; ArrayList arreglo;}
 {
     /***
     * for i in 10|[var,"hola",3,false]|"texto" | for i in array|string variable
 
     <FOR>iterator = <TEXT>{cicloFor.declararIterable(iterator.image);}<IN>
     */
-    <FOR>iterator = <TEXT><IN>
-    (aux = <NUMBER>|
-    aux = <TEXT>|
-    iterable = cadenaFor()|
-    arreglo = arregloFor())<LineBreak>
+    <FOR>iterator = <TEXT>{cicloFor.declararIterador(iterator.image);}<IN>
+    (aux = <NUMBER>{cicloFor.forNumero(iterator.image,Integer.parseInt(aux.image));}|
+    aux = <TEXT>{cicloFor.forVariable(iterator.image,aux.image);}|
+    Cadena = cadenaFor(){cicloFor.forString(iterator.image,Cadena);}|
+    arreglo = arregloFor(){cicloFor.forArray(iterator.image,arreglo);})<LineBreak>
     Code()
-    <END><LineBreak>
+    <END>{cicloFor.eliminarIterador(iterator.image);}<LineBreak>
 }
 void Operaciones():
 {}
@@ -215,18 +215,18 @@ void OperadoresArit():
  (<PLUS>|<MINUS>|<POR>|<DIVIDE>)
 }
 
-String cadenaFor():
+StringBuilder cadenaFor():
 {StringBuilder builder = new StringBuilder();String aux;Token t;}
 {
     <QUOTE>[(
     t = <TEXT>{builder.append(t.image);builder.append(" ");}|
     t = <NUMBER>{builder.append(t.image);builder.append(" ");})+]<QUOTE>
-    {return builder.toString();}
+    {return builder;}
 }
 ArrayList arregloFor():
 {ArrayList<Object> arreglo = new ArrayList<>(); Token t1;String aux;}
 {
-    <LBRACE>
+    <LBRACKET>
     (
         aux = String(){arreglo.add(aux);}|
         t1 = <NUMBER>{arreglo.add(Integer.parseInt(t1.image));}|
@@ -235,6 +235,18 @@ ArrayList arregloFor():
             arreglo.add(value);
         }|
         t1 = <TRUE>{arreglo.add(t1.image);}|
-        t1 = <FALSE>{arreglo.add(t1.image);})<RBRACE>
+        t1 = <FALSE>{arreglo.add(t1.image);})
+        [(<COMMA>(aux = String(){arreglo.add(aux);}|
+                         t1 = <NUMBER>{arreglo.add(Integer.parseInt(t1.image));}|
+                         t1 = <TEXT>{
+                             Object value = tokenAsignaciones.obtenerValor(t1.image);
+                             arreglo.add(value);
+                         }|
+                         t1 = <TRUE>{arreglo.add(t1.image);}|
+                         t1 = <FALSE>{arreglo.add(t1.image);}))+]<RBRACKET>
         {return arreglo;}
+}
+JAVACODE
+void Interprete() {
+    for(int i = 1; i < jjGet)
 }
