@@ -29,24 +29,48 @@ public class comparacion {
         }
     }
 
-    public static void CompararCadenas(String t1, String t2, String operador){
-        switch (operador) {
-            case "<":
-                System.out.println(t1.length() < t2.length() ? true : false);
-                break;
-            case "<=":
-                System.out.println(t1.length() <= t2.length() ? true : false);
-                break;
-            case ">":
-                System.out.println(t1.length() > t2.length() ? true : false);
-                break;
-            case ">=":
-                System.out.println(t1.length() >= t2.length() ? true : false);
-                break;
-            case "==":
-                System.out.println("\"" + t1 + "\" == \"" + t2 + "\" = " +(t1.equals(t2) ? true : false));
-                break;
+    public static void CompararCadenas(Object t1, String t2, String operador){
+        if(t1 instanceof String){
+            switch (operador) {
+                case "<":
+                    System.out.println(((String) t1).length() < t2.length());
+                    break;
+                case "<=":
+                    System.out.println(((String) t1).length() <= t2.length());
+                    break;
+                case ">":
+                    System.out.println(((String) t1).length() > t2.length());
+                    break;
+                case ">=":
+                    System.out.println(((String) t1).length() >= t2.length());
+                    break;
+                case "==":
+                    System.out.println("\"" + t1 + "\" == \"" + t2 + "\" = " +(t1.equals(t2)));
+                    break;
+            }
+            return;
         }
+        if(t1 instanceof Integer){
+            switch (operador){
+                case "<":
+                    System.out.println((Integer)t1 < t2.length());
+                    break;
+                case "<=":
+                    System.out.println((Integer)t1 <= t2.length());
+                    break;
+                case ">":
+                    System.out.println((Integer)t1 > t2.length());
+                    break;
+                case ">=":
+                    System.out.println((Integer)t1 >= t2.length());
+                    break;
+                case "==":
+                    System.out.println("Error: operacion == invalida");
+                    break;
+            }
+            return;
+        }
+        System.out.println("Error: \"" + t1 + "\" no es comparable con \"" + t2 + "\"" );
     }
 
     public static void CompararAsignacion(Object t1, String t2, String operador){

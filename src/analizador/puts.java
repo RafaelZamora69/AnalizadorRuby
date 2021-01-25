@@ -8,7 +8,7 @@ public class puts {
         if(variable != null){
             System.out.println(variable);
         } else {
-            System.out.println("Error de referencia: '" + t1.image + "' no esta existe");
+            System.out.println("Error de referencia: '" + t1.image + "' no existe");
         }
     }
 

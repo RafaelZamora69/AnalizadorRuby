@@ -1,6 +1,2 @@
-arreglo = [1,7,5,9,2]
-for i in arreglo
-    for j in arreglo
-        arreglo[j] = arreglo[i]
-    end
-end
+var = 15
+puts var
