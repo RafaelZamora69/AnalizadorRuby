@@ -1,2 +1,4 @@
-var = 15
-puts var
+gato = "hola"
+if "hola" == gato
+    puts "si"
+end

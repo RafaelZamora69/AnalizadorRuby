@@ -4,7 +4,6 @@ public class tokenAsignaciones {
     public static HashMap<String, Object> variables = new HashMap<>();
 
     public static void Asignar(Token t1, Object t2){
-        System.out.println("asignando");
         if(t2 instanceof Integer || t2 instanceof Boolean){
             variables.put(t1.image,t2);
         } else if(t2 instanceof String){

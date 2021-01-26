@@ -20,9 +20,11 @@ SKIP :
 }
 //Palabras reservadas
 TOKEN : {<END: "end">}
+TOKEN : {<DO: "do">}
 TOKEN : {<PUTS: "puts">}
+TOKEN : {<NIL: "nil">}
 TOKEN : {<IN: "in">}
-TOKEN : {<LineBreak: ("\r\n"|"\n")+>}
+TOKEN : {<LineBreak: ("\r\n"|"\n")>}
 //Condicionales
 TOKEN: {<IF: "if">}
 TOKEN: {<ELSE: "else">}
@@ -33,6 +35,8 @@ TOKEN: {<PLUS: "+">}
 TOKEN: {<MINUS: "-">}
 TOKEN: {<POR: "*">}
 TOKEN: {<DIVIDE: "/">}
+TOKEN: {<INCREMENT: "++">}
+TOKEN: {<DECREMENT: "--">}
 TOKEN: {<LPAREN: "(">}
 TOKEN: {<RPAREN: ")">}
 TOKEN: {<LBRACKET: "[">}
@@ -40,9 +44,9 @@ TOKEN: {<RBRACKET: "]">}
 TOKEN: {<LBRACE: "{">}
 TOKEN: {<RBRACE: "}">}
 TOKEN: {<ASIGNATION: "=">}
-TOKEN: {<NIL: "nil">}
 TOKEN: {<QUOTE: "\"">}
 TOKEN: {<COMMA: ",">}
+TOKEN: {<COLON: ":">}
 TOKEN: {<CAT: "#">}
 //Operadores lógicos
 TOKEN: {<LESS: "<">}
@@ -50,6 +54,9 @@ TOKEN: {<LESSEQ: "<=">}
 TOKEN: {<BIG: ">">}
 TOKEN: {<BIGEQ: ">=">}
 TOKEN: {<EQUALS: "==">}
+TOKEN: {<AND: "and">}
+TOKEN: {<OR: "or">}
+TOKEN: {<NOT: "not">}
 TOKEN: {<TRUE: "true">}
 TOKEN: {<FALSE: "false">}
 //Cadenas
@@ -63,12 +70,11 @@ void Start():
 void Code():
 {}
 {
-
     (
-        LOOKAHEAD(2)Puts()|
-        LOOKAHEAD(2)Variables()|
         If()|
         For()|
+        Puts()|
+        Variables()|
 		Operaciones()
     )+
 }
@@ -76,7 +82,7 @@ Token asignarString():
 {Token t2;StringBuilder builder = new StringBuilder();}
 {
     <QUOTE>(t2 = <TEXT>{builder.append(t2.image);builder.append(" ");}|t2 = <NUMBER>{builder.append(t2.image);})+<QUOTE>
-    {t2.image = builder.toString().trim();return t2;}
+    {t2.image = builder.toString();return t2;}
 }
 ArrayList asignarArreglo():
 {Token t1; ArrayList<Token> arreglo = new ArrayList<>();}
@@ -102,19 +108,19 @@ String Interpolacion():
 {
     //Operaciones()
     <CAT><LBRACE>(
-    t1 = <TEXT>{if(tokenAsignaciones.comprobarVariable(t1.image)){ builder.append(tokenAsignaciones.obtenerValor(t1.image)); } else { System.out.println("Error: '" + t1.image + "' no existe.");}}|
+    t1 = <TEXT>{if(tokenAsignaciones.comprobarVariable(t1.image)){ builder.append(t1.image); } else { System.out.println("Error: '" + t1.image + "' no existe.");}}|
     t1 = <NUMBER>{builder.append(t1.image);}|
-    LOOKAHEAD(2)Operaciones())<RBRACE>
+    Operaciones())<RBRACE>
     {return builder.toString();}
 }
 String String():
 {StringBuilder builder = new StringBuilder();String aux;Token t;}
 {
     <QUOTE>[(
-    aux = Interpolacion(){builder.append(aux);builder.append(" ");}|
-    t = <TEXT>{builder.append(t.image);builder.append(" ");}|
-    t = <NUMBER>{builder.append(t.image);builder.append(" ");})+]<QUOTE>
-    {return builder.toString().trim();}
+    aux = Interpolacion(){builder.append(aux);}|(
+    t = <TEXT>{builder.append(t.image);}|
+    t = <NUMBER>{builder.append(t.image);}))+]<QUOTE>
+    {return builder.toString();}
 }
 void ArrayIndex(String var):
 {Token t1,index;}
@@ -125,17 +131,17 @@ void If():
 {}
 {
   <IF>Comparacion()[<LineBreak>]
-    [Code()]
+    Code()
     [<ELSE>[<LineBreak>]
-    [Code()]]
+    Code()]
     <END>[<LineBreak>]
 }
 void Comparacion():
 {Token t1,condition;Object obj1;}
 {
   (
-    t1 = <NUMBER>{obj1 = Integer.parseInt(t1.image);}|
-    t1 = <TEXT>{obj1 = t1.image;}|t1 = <TRUE>{obj1 = Boolean.parseBoolean(t1.image);}|t1 = <FALSE>{obj1 = Boolean.parseBoolean(t1.image);}|
+    t1 = <NUMBER>{obj1 = t1.image;}|
+    t1 = <TEXT>{obj1 = t1.image;}|t1 = <TRUE>{obj1 = t1.image;}|t1 = <FALSE>{obj1 = t1.image;}|
     t1 = asignarString(){obj1 = t1.image;})
   (condition = <BIG>|
   condition = <BIGEQ>|
@@ -146,7 +152,7 @@ void Comparacion():
   t1 = <TEXT>{comparacion.CompararAsignacion(obj1, t1.image, condition.image);}|
   t1 = <TRUE>{comparacion.CompararBoolean(obj1, t1.image, condition.image);}|
   t1 = <FALSE>{comparacion.CompararBoolean(obj1, t1.image, condition.image);}|
-  t1 = asignarString(){comparacion.CompararCadenas(obj1, t1.image, condition.image);})[<LineBreak>]
+  t1 = asignarString(){comparacion.CompararCadenas((String)obj1, t1.image, condition.image);})[<LineBreak>]
 }
 void Variables():
 {Token t1,t2;ArrayList aux;}
@@ -162,7 +168,12 @@ void Variables():
     t2 = <NIL>{tokenAsignaciones.Asignar(t1,"nil");}|
     t2 = <TRUE>{tokenAsignaciones.Asignar(t1,Boolean.parseBoolean(t2.image));}|
     t2 = <FALSE>{tokenAsignaciones.Asignar(t1,Boolean.parseBoolean(t2.image));}|
-    aux = asignarArreglo(){tokenAsignaciones.AsignarArreglo(t1.image,aux);})[<LineBreak>]
+    /***
+    *
+    * variable = [] | variable = [var1, nil, 2, "cadena", false, [...]
+    */
+    aux = asignarArreglo(){tokenAsignaciones.AsignarArreglo(t1.image,aux);}|
+    Operaciones())[<LineBreak>]
 }
 void Puts():
 {Token t1,index;String aux;}
@@ -170,10 +181,11 @@ void Puts():
     /***
     * puts variable | puts "Hola mundo" | puts "me llamo #{nombre} y tengo #{edad} añazos | puts arreglo[indice]"
     */
-    <PUTS>
+    <PUTS>(
     aux = String(){puts.imprimir(aux);}|
     t1 = <TEXT>[<LBRACKET>(index = <TEXT>{arreglo.valorArreglo(t1.image,index.image);}|index = <NUMBER>{arreglo.valorArreglo(t1.image,Integer.parseInt(index.image));})<RBRACKET>{return;}]{puts.imprimirVariable(t1);}|
-    t1 = <NUMBER>{puts.imprimir(t1.image);}[<LineBreak>]
+    t1 = <NUMBER>{puts.imprimir(t1.image);}|
+    Operaciones())[<LineBreak>]
 }
 void For():
 {Token iterator, aux; StringBuilder Cadena; ArrayList arreglo;}
@@ -188,18 +200,19 @@ void For():
     aux = <TEXT>{cicloFor.forVariable(iterator.image,aux.image);}|
     Cadena = cadenaFor(){cicloFor.forString(iterator.image,Cadena);}|
     arreglo = arregloFor(){cicloFor.forArray(iterator.image,arreglo);})[<LineBreak>]
-    [Code()]
+    Code()
     <END>{cicloFor.eliminarIterador(iterator.image);}[<LineBreak>]
 }
 void Operaciones():
-{Token t1,op,t2;System.out.println("operaciones");}
+{}
 {
-    (t1 = <NUMBER>|t1 = <TEXT>)op = OperadoresArit()(t2 = <NUMBER>{System.out.println(operaciones.opNumero(Float.parseFloat(t1.image),op.image,Float.parseFloat(t2.image)));}|<TEXT>)[<LineBreak>]
+    (<NUMBER>|<TEXT>)OperadoresArit()(<NUMBER>|<TEXT>)|
+    <LPAREN>Operaciones()<RPAREN>
 }
-Token OperadoresArit():
-{Token op;}
+void OperadoresArit():
+{}
 {
- (op = <PLUS>|op = <MINUS>|op = <POR>|op = <DIVIDE>){return op;}
+ (<PLUS>|<MINUS>|<POR>|<DIVIDE>)
 }
 
 StringBuilder cadenaFor():
