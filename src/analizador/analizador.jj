@@ -108,7 +108,7 @@ String Interpolacion():
 {
     //Operaciones()
     <CAT><LBRACE>(
-    t1 = <TEXT>{if(tokenAsignaciones.comprobarVariable(t1.image)){ builder.append(t1.image); } else { System.out.println("Error: '" + t1.image + "' no existe.");}}|
+    t1 = <TEXT>{if(tokenAsignaciones.comprobarVariable(t1.image)){ builder.append(tokenAsignaciones.obtenerValor(t1.image)); } else { System.out.println("Error: '" + t1.image + "' no existe.");}}|
     t1 = <NUMBER>{builder.append(t1.image);}|
     Operaciones())<RBRACE>
     {return builder.toString();}
@@ -117,10 +117,10 @@ String String():
 {StringBuilder builder = new StringBuilder();String aux;Token t;}
 {
     <QUOTE>[(
-    aux = Interpolacion(){builder.append(aux);}|(
-    t = <TEXT>{builder.append(t.image);}|
-    t = <NUMBER>{builder.append(t.image);}))+]<QUOTE>
-    {return builder.toString();}
+    aux = Interpolacion(){builder.append(aux);builder.append(" ");}|(
+    t = <TEXT>{builder.append(t.image);builder.append(" ");}|
+    t = <NUMBER>{builder.append(t.image);builder.append(" ");}))+]<QUOTE>
+    {return builder.toString().trim();}
 }
 void ArrayIndex(String var):
 {Token t1,index;}

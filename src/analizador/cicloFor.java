@@ -5,7 +5,7 @@ import java.util.HashMap;
 public class cicloFor {
 
     public static void declararIterador(Object iterador){
-        tokenAsignaciones.variables.put((String)iterador,null);
+        tokenAsignaciones.variables.put((String)iterador,"nil");
     }
 
     public static void eliminarIterador(Object iterador){

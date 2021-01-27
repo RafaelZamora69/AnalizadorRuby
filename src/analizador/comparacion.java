@@ -74,11 +74,9 @@ public class comparacion {
     }
 
     public static void CompararAsignacion(Object t1, String t2, String operador){
-        //TODO: Cambiar arreglo, debe de guardarse como ArrayList.
         HashMap<String,Object> variables = tokenAsignaciones.obtenerHashMap();
         if(variables.get(t2) != null){
             Object variable = variables.get(t2);
-            System.out.println(variable.getClass());
             if(variable instanceof Integer){
                 CompararEnteros(t1, (Integer)variable, operador);
                 return;

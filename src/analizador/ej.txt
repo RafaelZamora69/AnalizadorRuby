@@ -1,4 +1,4 @@
-gato = "hola"
-if "hola" == gato
-    puts "si"
+arreglo = [false,true,"hola",10]
+for i in arreglo
+    puts i
 end
